@@ -66,7 +66,7 @@ Change this if your Qualtrics account uses a different data center. See the [Qua
 
 ## Quick start
 
-You will run this workflow **twice** — once for **baseline** and once for **endline**.
+The workflow covers both waves. **You must download and wrangle both waves before annotating**, because the baseline annotation is restricted to participants who also completed the endline.
 
 ### Step 1 — Edit config at the top of each script
 
@@ -80,22 +80,39 @@ You can find the Survey ID by opening the survey in Qualtrics and looking at the
 
 ![qualtrics1.png](qualtrics1.png)
 
-### Step 2 — Run the scripts in order
+### Step 2 — Download and wrangle both waves first
 
 ```bash
+# Endline — set WAVE="endline" and the endline SURVEY_ID in each script
 Rscript 01_download.R
 Rscript 02_wrangle.R
+
+# Baseline — set WAVE="baseline" and the baseline SURVEY_ID in each script
+Rscript 01_download.R
+Rscript 02_wrangle.R
+```
+
+### Step 3 — Annotate and bundle each wave
+
+```bash
+# Baseline (will be filtered to endline completers automatically)
+# Set WAVE="baseline" in 03_run_app.R and 04_bundle_results.R
+Rscript 03_run_app.R
+Rscript 04_bundle_results.R
+
+# Endline
+# Set WAVE="endline" in 03_run_app.R and 04_bundle_results.R
 Rscript 03_run_app.R
 Rscript 04_bundle_results.R
 ```
 
-### Step 3 — Send the ZIP
+### Step 4 — Send both ZIPs
 
-After `04_bundle_results.R` completes, send the ZIP file it creates to **cb5691@nyu.edu**.
+Send both ZIP files to **cb5691@nyu.edu**:
 
-The ZIP will be in:
 ```
-data/qualtrics/<TEAM_SLUG>/<WAVE>/results/bundle_<TEAM_SLUG>_<WAVE>_<timestamp>.zip
+data/qualtrics/<TEAM_SLUG>/baseline/results/bundle_<TEAM_SLUG>_baseline_<timestamp>.zip
+data/qualtrics/<TEAM_SLUG>/endline/results/bundle_<TEAM_SLUG>_endline_<timestamp>.zip
 ```
 
 ---
@@ -144,6 +161,7 @@ Opens a browser-based app for reviewing screenshots.
 
 **Edit before running:**
 - `TEAM_SLUG` and `WAVE`
+- `FILTER_TO_ENDLINE` — when `WAVE="baseline"`, this filters the sample to only participants who also completed the endline (default: `TRUE`). Leave this as `TRUE`. The endline must have been wrangled first (step 2 above).
 
 **Run:**
 
@@ -161,6 +179,7 @@ A browser window opens automatically.
 - For Android respondents, the app shows the expected day of week and calendar date.
 - Click any screenshot to open it fullscreen.
 - You can close and re-open the app at any time — your progress is preserved.
+- When annotating baseline, only participants who completed the endline are included in the sample.
 
 **For each screenshot, answer two questions:**
 
@@ -239,3 +258,5 @@ data/
 **App shows no screenshots** — Make sure `02_wrangle.R` ran successfully and the `derived/` files exist.
 
 **Want to redo the sample** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then re-run `03_run_app.R`.
+
+**`FILTER_TO_ENDLINE is TRUE but endline derived file not found`** — You need to run `01_download.R` and `02_wrangle.R` with `WAVE="endline"` before annotating the baseline. See the Quick start order above.
