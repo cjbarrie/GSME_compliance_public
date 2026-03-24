@@ -12,6 +12,11 @@ library(tibble)
 TEAM_SLUG <- "XX"       # <-- your ISO2 country code (e.g. "GB", "US")
 WAVE <- "baseline"      # "baseline" or "endline"
 
+# When annotating baseline, filter to only participants who also completed the endline.
+# Requires endline 02_wrangle.R to have been run first.
+# Set to FALSE to annotate all baseline respondents regardless.
+FILTER_TO_ENDLINE <- TRUE
+
 ROOT_DIR <- file.path("data", "qualtrics", TEAM_SLUG, WAVE)
 
 AVG_IN <- file.path(ROOT_DIR, "derived", "average_screentime_for_annotation.csv")
@@ -183,6 +188,45 @@ if (!file.exists(APP_IN)) stop("Missing app input CSV: ", APP_IN, call. = FALSE)
 
 avg_raw <- safe_read(AVG_IN)
 app_raw <- safe_read(APP_IN)
+
+# ----------------------------
+# Filter to endline completers (baseline only)
+# ----------------------------
+if (WAVE == "baseline" && FILTER_TO_ENDLINE) {
+  endline_avg_path <- file.path("data", "qualtrics", TEAM_SLUG, "endline", "derived",
+                                "average_screentime_for_annotation.csv")
+  if (!file.exists(endline_avg_path)) {
+    stop(
+      "FILTER_TO_ENDLINE is TRUE but endline derived file not found:\n  ", endline_avg_path,
+      "\n\nRun 01_download.R and 02_wrangle.R for WAVE=\"endline\" first,",
+      " or set FILTER_TO_ENDLINE <- FALSE to annotate all baseline respondents.",
+      call. = FALSE
+    )
+  }
+  endline_ids <- safe_read(endline_avg_path) %>%
+    filter(!is.na(participant_id) & nzchar(as.character(participant_id))) %>%
+    pull(participant_id) %>%
+    as.character() %>%
+    unique()
+
+  n_avg_before <- nrow(avg_raw)
+  n_app_before <- nrow(app_raw)
+  avg_raw <- avg_raw %>% filter(as.character(participant_id) %in% endline_ids)
+  app_raw <- app_raw %>% filter(as.character(participant_id) %in% endline_ids)
+
+  message(sprintf(
+    "Filtered baseline to endline completers (%d IDs): avg %d -> %d rows, app %d -> %d rows",
+    length(endline_ids), n_avg_before, nrow(avg_raw), n_app_before, nrow(app_raw)
+  ))
+
+  if (nrow(avg_raw) == 0) {
+    stop(
+      "No baseline respondents matched any endline participant_id.\n",
+      "Check that PARTICIPANT_ID_COL is set correctly in 02_wrangle.R for both waves.",
+      call. = FALSE
+    )
+  }
+}
 
 avg_tasks <- build_or_load_sample("avg", avg_raw, n = N_AVG, seed = SEED)
 app_tasks <- build_or_load_sample("app", app_raw, n = N_APP, seed = SEED)
