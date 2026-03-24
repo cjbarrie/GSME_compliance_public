@@ -57,6 +57,11 @@ make_zip_in_dir <- function(results_dir, zip_path, files_rel) {
 # ----------------------------
 # Bundle both waves
 # ----------------------------
+if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
+  stop("TEAM_SLUG is blank. Set it to your ISO2 country code (e.g. \"GB\", \"US\") in the CONFIG section.",
+       call. = FALSE)
+}
+
 BASE_DIR <- get_script_dir()
 
 for (WAVE in c("baseline", "endline")) {

@@ -172,6 +172,11 @@ fmt_hm <- function(h, m) {
 # ----------------------------
 # Check inputs
 # ----------------------------
+if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
+  stop("TEAM_SLUG is blank. Set it to your ISO2 country code (e.g. \"GB\", \"US\") in the CONFIG section.",
+       call. = FALSE)
+}
+
 for (p in c(ENDLINE_AVG_IN, ENDLINE_APP_IN, BASELINE_AVG_IN, BASELINE_APP_IN)) {
   if (!file.exists(p))
     stop("Missing input file: ", p, "\nRun 02_wrangle.R first.", call. = FALSE)

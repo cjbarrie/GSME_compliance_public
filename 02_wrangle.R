@@ -27,7 +27,6 @@ library(tidyr)
 TEAM_SLUG <- "XX"  # <-- your ISO2 country code (e.g. "GB", "US")
 
 # Participant ID column — stable ID that matches across waves, from your panel provider
-# (e.g. "ID", "PanelID", "ExternalReference"). Set to NA if you don't have one.
 PARTICIPANT_ID_COL <- "ID"
 
 # For test data only: generate dummy IDs if the column is all NA. Set FALSE for real data.
@@ -180,6 +179,11 @@ add_screenshot_paths <- function(df, manifest, id_col = "ResponseId") {
 # ----------------------------
 # Process both waves
 # ----------------------------
+if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
+  stop("TEAM_SLUG is blank. Set it to your ISO2 country code (e.g. \"GB\", \"US\") in the CONFIG section.",
+       call. = FALSE)
+}
+
 for (WAVE in c("endline", "baseline")) {
   message(sprintf("\n========== Wrangling %s ==========", toupper(WAVE)))
 
