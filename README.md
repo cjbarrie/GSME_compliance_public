@@ -66,47 +66,31 @@ Change this if your Qualtrics account uses a different data center. See the [Qua
 
 ## Quick start
 
-The workflow covers both waves. **You must download and wrangle both waves before annotating**, because the baseline annotation is restricted to participants who also completed the endline.
+Each script handles both waves automatically — you only edit config once per script.
 
 ### Step 1 — Edit config at the top of each script
 
-In each of the four scripts, set:
-
+In `01_download.R`, set:
 - `TEAM_SLUG` — your ISO 2-letter country code (e.g. `"GB"`, `"US"`, `"BR"`). See [ISO 3166-1 alpha-2 codes](https://www.iso.org/obp/ui/#search).
-- `WAVE` — `"baseline"` or `"endline"`
-- `SURVEY_ID` (in `01_download.R` only) — found in your Qualtrics survey URL, starts with `SV_`
+- `BASE_URL` — your Qualtrics data center
+- `SURVEY_IDS$endline` and `SURVEY_IDS$baseline` — found in your Qualtrics survey URLs, start with `SV_`
 
-You can find the Survey ID by opening the survey in Qualtrics and looking at the URL:
+You can find a Survey ID by opening the survey in Qualtrics and looking at the URL:
 
 ![qualtrics1.png](qualtrics1.png)
 
-### Step 2 — Download and wrangle both waves first
+In `02_wrangle.R` and `03_run_app.R` and `04_bundle_results.R`, set `TEAM_SLUG` only.
+
+### Step 2 — Run the four scripts in order
 
 ```bash
-# Endline — set WAVE="endline" and the endline SURVEY_ID in each script
-Rscript 01_download.R
-Rscript 02_wrangle.R
-
-# Baseline — set WAVE="baseline" and the baseline SURVEY_ID in each script
-Rscript 01_download.R
-Rscript 02_wrangle.R
+Rscript 01_download.R       # downloads both waves
+Rscript 02_wrangle.R        # wrangles both waves
+Rscript 03_run_app.R        # annotate both waves in one session
+Rscript 04_bundle_results.R # bundles both waves
 ```
 
-### Step 3 — Annotate and bundle each wave
-
-```bash
-# Baseline (will be filtered to endline completers automatically)
-# Set WAVE="baseline" in 03_run_app.R and 04_bundle_results.R
-Rscript 03_run_app.R
-Rscript 04_bundle_results.R
-
-# Endline
-# Set WAVE="endline" in 03_run_app.R and 04_bundle_results.R
-Rscript 03_run_app.R
-Rscript 04_bundle_results.R
-```
-
-### Step 4 — Submit both ZIPs
+### Step 3 — Submit both ZIPs
 
 Upload both ZIP files using this form: **https://forms.gle/szGhMHymtzTqEEjh8**
 
@@ -125,9 +109,8 @@ Downloads all Qualtrics responses and uploaded screenshot files for the wave.
 
 **Edit before running:**
 - `TEAM_SLUG`
-- `WAVE`
-- `SURVEY_ID` (your baseline or endline survey ID)
 - `BASE_URL` (your Qualtrics data center, if different)
+- `SURVEY_IDS$endline` and `SURVEY_IDS$baseline`
 
 **Outputs:**
 - `data/qualtrics/<TEAM_SLUG>/<WAVE>/responses.csv`
@@ -141,7 +124,7 @@ Downloads all Qualtrics responses and uploaded screenshot files for the wave.
 Processes responses into standardised CSVs ready for the annotation app.
 
 **Edit before running:**
-- `TEAM_SLUG` and `WAVE` (must match `01_download.R`)
+- `TEAM_SLUG`
 - `PARTICIPANT_ID_COL` — the Qualtrics column containing your panel provider's stable participant ID (e.g. `"ID"`, `"PanelID"`). This is used to link respondents across baseline and endline. Set to `NA` if you don't have one.
 - `GENERATE_DUMMY_IDS` — leave as `FALSE` for real data
 
@@ -160,8 +143,7 @@ Processes responses into standardised CSVs ready for the annotation app.
 Opens a browser-based app for reviewing screenshots.
 
 **Edit before running:**
-- `TEAM_SLUG` and `WAVE`
-- `FILTER_TO_ENDLINE` — when `WAVE="baseline"`, this filters the sample to only participants who also completed the endline (default: `TRUE`). Leave this as `TRUE`. The endline must have been wrangled first (step 2 above).
+- `TEAM_SLUG`
 
 **Run:**
 
@@ -174,12 +156,12 @@ A browser window opens automatically.
 **How the app works:**
 
 - **No Save button.** Annotations are saved automatically when you click Next, Prev, or Go.
-- Tasks run in two phases: first **Average** screenshots, then **App-level** screenshots.
+- Tasks run across four phases in order: **Endline average** → **Endline app-level** → **Baseline average** → **Baseline app-level**.
+- Baseline tasks are automatically restricted to participants who also completed the endline.
 - The app shows the reported screentime value alongside the screenshot so you can check they match.
 - For Android respondents, the app shows the expected day of week and calendar date.
 - Click any screenshot to open it fullscreen.
 - You can close and re-open the app at any time — your progress is preserved.
-- When annotating baseline, only participants who completed the endline are included in the sample.
 
 **For each screenshot, answer two questions:**
 
@@ -203,7 +185,7 @@ The sample files are created on first run with a stable random seed — deleting
 Packages your annotation results into a ZIP file for submission.
 
 **Edit before running:**
-- `TEAM_SLUG` and `WAVE`
+- `TEAM_SLUG`
 
 **Run:**
 
@@ -259,4 +241,4 @@ data/
 
 **Want to redo the sample** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then re-run `03_run_app.R`.
 
-**`FILTER_TO_ENDLINE is TRUE but endline derived file not found`** — You need to run `01_download.R` and `02_wrangle.R` with `WAVE="endline"` before annotating the baseline. See the Quick start order above.
+**`No baseline respondents matched any endline participant_id`** — Check that `PARTICIPANT_ID_COL` is set correctly in `02_wrangle.R` and that both waves have been wrangled.
