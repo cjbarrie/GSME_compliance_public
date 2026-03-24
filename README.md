@@ -106,9 +106,9 @@ Rscript 03_run_app.R
 Rscript 04_bundle_results.R
 ```
 
-### Step 4 — Send both ZIPs
+### Step 4 — Submit both ZIPs
 
-Send both ZIP files to **cb5691@nyu.edu**:
+Upload both ZIP files using this form: **https://forms.gle/szGhMHymtzTqEEjh8**
 
 ```
 data/qualtrics/<TEAM_SLUG>/baseline/results/bundle_<TEAM_SLUG>_baseline_<timestamp>.zip
@@ -214,7 +214,7 @@ Rscript 04_bundle_results.R
 **Outputs:**
 - `data/qualtrics/<TEAM_SLUG>/<WAVE>/results/bundle_<TEAM_SLUG>_<WAVE>_<timestamp>.zip`
 
-**Send this ZIP to cb5691@nyu.edu.**
+**Upload this ZIP at: https://forms.gle/szGhMHymtzTqEEjh8**
 
 ---
 
