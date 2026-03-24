@@ -1,0 +1,16 @@
+# R / Shiny artifacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# macOS
+.DS_Store
+
+# Environment variables (API keys)
+.env
+
+# Survey data and screenshots — never commit these
+data/
+
+# Python cache
+__pycache__/
