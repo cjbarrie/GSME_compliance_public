@@ -23,12 +23,12 @@ library(readr)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-BASE_URL  <- "ca1.qualtrics.com"  # <-- change to your Qualtrics data center (see README)
-TEAM_SLUG <- "XX"                 # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
+BASE_URL  <- "yul1.qualtrics.com"  # <-- change to your Qualtrics data center (see README)
+TEAM_SLUG <- ""                 # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
 
 SURVEY_IDS <- list(
-  endline  = "",  # <-- your endline survey ID (starts with SV_)
-  baseline = ""   # <-- your baseline survey ID (starts with SV_)
+  endline  = "SV_**********",  # <-- your endline ("post treatment) survey ID (starts with SV_)
+  baseline = "SV_**********"   # <-- your baseline ("treatment assignment") survey ID (starts with SV_)
 )
 
 # Resume controls — set TRUE to re-download even if files already exist
@@ -176,6 +176,11 @@ download_uploaded_files <- function(df, survey_id, out_dir, base_url = BASE_URL,
 # ----------------------------
 # RUN — both waves, endline first
 # ----------------------------
+if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
+  stop("TEAM_SLUG is blank. Set it to your ISO2 country code (e.g. \"GB\", \"US\") in the CONFIG section.",
+       call. = FALSE)
+}
+
 for (survey_id_val in SURVEY_IDS) {
   if (is.null(survey_id_val) || !nzchar(survey_id_val)) {
     stop("One or both SURVEY_IDS are blank. Edit the CONFIG section at the top of this script.",
