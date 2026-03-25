@@ -213,6 +213,12 @@ Rscript 03_run_app.R
 
 A browser window opens automatically. If it does not, look for a URL printed in the console (e.g. `http://127.0.0.1:XXXX`) and open it manually.
 
+### What the app looks like
+
+![The annotation app landing screen showing a respondent screenshot on the left, reported screen time and annotation controls on the right, and progress information in the sidebar](ui1.png)
+
+*The main annotation screen. The respondent's screenshot appears on the left. The right panel shows reported screen time values to compare against, followed by the two Yes/No questions. The left sidebar shows your current phase, task number, and overall completion progress.*
+
 ### First time setup in the app
 
 Enter your **name** in the Reviewer name field in the top-left sidebar. This is required before you can save any annotations and is used to track who annotated what.
@@ -233,6 +239,10 @@ You cannot skip ahead to a later phase until the earlier one is complete. Baseli
 **1. Correct screenshot?**
 
 Is this the right type of screenshot? Click the **ⓘ** icon next to this question at any time to see exactly what each screenshot should look like for iOS and Android.
+
+![The info modal showing guidance on what a correct screenshot should look like](ui3.png)
+
+*Clicking the ⓘ icon opens a guidance panel with device-specific instructions for what the screenshot should show.*
 
 In brief:
 - **iOS average:** Screen Time weekly summary showing "Last Week's Average" bar chart (S–M–T–W–T–F–S)
@@ -274,6 +284,10 @@ The app supports multiple team members annotating in shifts. Each person:
 2. The app automatically resumes at the first unannotated task
 
 This means annotators can divide the workload without duplicating effort or losing any work. Previously annotated tasks show a green badge with the name and time of whoever completed them.
+
+![The annotation app showing a previously annotated task with a green badge indicating who completed it and when](ui2.png)
+
+*When you navigate to a task that another team member has already annotated, a green badge appears showing their name and the time of annotation. Their answers are pre-filled so you can review or correct them if needed.*
 
 ### Progress is always saved
 
