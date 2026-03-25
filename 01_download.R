@@ -27,8 +27,8 @@ BASE_URL  <- "yul1.qualtrics.com"  # <-- change to your Qualtrics data center (s
 TEAM_SLUG <- ""                 # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
 
 SURVEY_IDS <- list(
-  endline  = "SV_**********",  # <-- your endline ("post treatment) survey ID (starts with SV_)
-  baseline = "SV_**********"   # <-- your baseline ("treatment assignment") survey ID (starts with SV_)
+  endline  = "",  # <-- your endline ("post treatment) survey ID (starts with SV_)
+  baseline = ""   # <-- your baseline ("treatment assignment") survey ID (starts with SV_)
 )
 
 # Resume controls — set TRUE to re-download even if files already exist

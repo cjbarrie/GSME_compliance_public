@@ -24,7 +24,7 @@ library(tidyr)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-TEAM_SLUG <- "XX"  # <-- your ISO2 country code (e.g. "GB", "US")
+TEAM_SLUG <- ""  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
 
 # Participant ID column — stable ID that matches across waves, from your panel provider
 PARTICIPANT_ID_COL <- "ID"
@@ -108,13 +108,14 @@ calculate_android_target_date <- function(completion_timestamp, target_day_name)
   if (is.na(completion_timestamp) || is.na(target_day_name)) return(NA_character_)
   completion_date <- tryCatch(as.Date(completion_timestamp), error = function(e) NA)
   if (is.na(completion_date)) return(NA_character_)
-  day_to_num <- c(Monday=1,Tuesday=2,Wednesday=3,Thursday=4,Friday=5,Saturday=6,Sunday=7)
-  target_day_num <- day_to_num[target_day_name]
-  if (is.na(target_day_num)) return(NA_character_)
-  completion_day_num <- as.integer(format(completion_date, "%u"))
-  days_back <- (completion_day_num - target_day_num + 7) %% 7
-  if (days_back == 0) days_back <- 7
-  format(completion_date - days_back, "%Y-%m-%d")
+  day_to_offset <- c(Monday=0L,Tuesday=1L,Wednesday=2L,Thursday=3L,Friday=4L,Saturday=5L,Sunday=6L)
+  offset <- day_to_offset[target_day_name]
+  if (is.na(offset)) return(NA_character_)
+  # Find Monday of the ISO week containing the completion date (Mon=1 ... Sun=7)
+  completion_iso_weekday <- as.integer(format(completion_date, "%u"))
+  monday_this_week <- completion_date - (completion_iso_weekday - 1L)
+  # Target day in the previous week
+  format(monday_this_week - 7L + offset, "%Y-%m-%d")
 }
 
 mget_col_by_row <- function(df, col_names_vec) {

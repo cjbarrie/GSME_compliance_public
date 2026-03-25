@@ -15,14 +15,15 @@ library(stringr)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-TEAM_SLUG <- "XX"  # <-- your ISO2 country code (e.g. "GB", "US")
+TEAM_SLUG <- ""  # <-- your ISO2 country code (e.g. "GB", "US")
 
 
 # ----------------------------
 # Helpers
 # ----------------------------
 FILES_TO_BUNDLE <- c("annotations_avg.csv", "annotations_app.csv",
-                     "sample_avg.csv", "sample_app.csv")
+                     "sample_avg.csv", "sample_app.csv",
+                     "audit_log_avg.csv", "audit_log_app.csv")
 
 get_script_dir <- function() {
   args     <- commandArgs(trailingOnly = FALSE)
