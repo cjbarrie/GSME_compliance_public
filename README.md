@@ -1,21 +1,20 @@
 # Screenshot Compliance Check — Country Team Guide
 
-This guide walks you through everything you need to do, from first-time setup to submitting your results. No prior experience is assumed.
+This guide walks you through everything you need to do after receiving your data package from Chris.
 
-**Your job in brief:** download your survey data from Qualtrics, run three short scripts to prepare and annotate it, then send the results back.
+**Your job in brief:** receive a data package, verify it, annotate screenshots in the app, then send the results back.
 
 ---
 
 ## Contents
 
 1. [One-time setup](#1-one-time-setup)
-2. [Before you start each wave](#2-before-you-start-each-wave)
-3. [Step 1 — Download survey data](#3-step-1--download-survey-data)
-4. [Step 2 — Prepare data for annotation](#4-step-2--prepare-data-for-annotation)
-5. [Step 3 — Annotate screenshots](#5-step-3--annotate-screenshots)
-6. [Step 4 — Bundle and submit](#6-step-4--bundle-and-submit)
-7. [Folder structure](#7-folder-structure)
-8. [Troubleshooting](#8-troubleshooting)
+2. [Receive and unzip your data package](#2-receive-and-unzip-your-data-package)
+3. [Step 0 — Verify your setup](#3-step-0--verify-your-setup)
+4. [Step 3 — Annotate screenshots](#4-step-3--annotate-screenshots)
+5. [Step 4 — Bundle and submit](#5-step-4--bundle-and-submit)
+6. [Folder structure](#6-folder-structure)
+7. [Troubleshooting](#7-troubleshooting)
 
 ---
 
@@ -36,159 +35,78 @@ Open R or RStudio and run this once:
 
 ```r
 install.packages(c(
-  "qualtRics", "httr", "readr", "dplyr", "stringr", "tidyr", "shiny", "tibble"
+  "readr", "dplyr", "stringr", "tidyr", "shiny", "tibble"
 ))
 ```
 
 This only needs to be done once per computer.
 
-### 1c. Set your Qualtrics API key
+### 1c. Get this code repository
 
-You need an API key to download data from Qualtrics. To find yours:
-
-1. Log in to Qualtrics
-2. Click your account icon (top right) → **Account Settings**
-3. Go to the **Qualtrics IDs** tab
-4. Copy the value under **API Token**
-
-Now save it so R can find it. The easiest way is to open your `.Renviron` file:
-
-```r
-usethis::edit_r_environ()
-```
-
-Add this line (replacing `YOUR_KEY_HERE` with your actual key):
-
-```
-QUALTRICS_API_KEY=YOUR_KEY_HERE
-```
-
-Save the file, then **restart R**.
-
-> If `usethis` is not installed, run `install.packages("usethis")` first.
-
-### 1d. Find your Qualtrics data center
-
-Each script has a line near the top:
-
-```r
-BASE_URL <- "ca1.qualtrics.com"
-```
-
-You need to change this to match your Qualtrics account. To find your data center:
-
-1. In Qualtrics, go to **Account Settings → User Settings**
-2. Look for **Datacenter ID**
-
-![The Qualtrics User Settings page showing where to find your Datacenter ID](qualtrics2.png)
-
-*The screenshot above shows the Qualtrics User Settings page. Your Datacenter ID appears in the top section — in this example it is `yul1`, so `BASE_URL` should be `"yul1.qualtrics.com"`.*
+If you have not already, clone or download this repository to your computer. The easiest way is to click the green **Code** button on GitHub and choose **Download ZIP**, then unzip it somewhere convenient (e.g. your Desktop or Documents folder).
 
 ---
 
-## 2. Before you start each wave
+## 2. Receive and unzip your data package
 
-### 2a. Find your Survey IDs
+Chris will send you a link to a ZIP file (via Google Drive or similar). The file is named something like:
 
-Each survey has a unique ID that starts with `SV_`. You can find it in the survey URL when you open it in Qualtrics:
+```
+annotation_data_GB_endline_20260115_143022.zip
+```
 
-![qualtrics1.png](qualtrics1.png)
+**Important:** unzip this file directly into the folder that contains the scripts (`03_run_app.R`, etc.) — not into a subfolder. After unzipping, the folder structure inside should merge with the existing `data/` folder already there.
 
-You will need the IDs for both your **baseline** and **endline** surveys.
-
-### 2b. Find your participant ID column name
-
-Your panel provider assigns each participant a stable ID that is the same across both surveys. You need to know what this column is called in your Qualtrics data (e.g. `"ID"`, `"PanelID"`, `"PROLIFIC_PID"`).
-
-If you are unsure, download your survey responses from Qualtrics as a CSV and look at the column headers.
+If you unzip correctly, you should see a `data/` folder appear (or merge) in your project directory.
 
 ---
 
-## 3. Step 1 — Download survey data
+## 3. Step 0 — Verify your setup
 
-**Script:** `01_download.R`
+**Script:** `00_check_setup.R`
 
-### What it does
-
-Downloads all survey responses and uploaded screenshot files from Qualtrics for both waves.
+Run this immediately after unzipping. It confirms that all the required files and screenshots are present.
 
 ### How to run it
 
-1. Open `01_download.R` in RStudio (or any text editor)
-2. Find the `CONFIG` section near the top and fill in:
+1. Open `00_check_setup.R` in RStudio
+2. Set `TEAM_SLUG` to your ISO2 country code:
 
 ```r
-BASE_URL  <- "yul1.qualtrics.com"  # your Qualtrics data center (see section 1d)
-TEAM_SLUG <- "GB"                  # your ISO2 country code
-
-SURVEY_IDS <- list(
-  endline  = "SV_xxxxxxxxxx",  # your endline survey ID
-  baseline = "SV_xxxxxxxxxx"   # your baseline survey ID
-)
+TEAM_SLUG <- "GB"
 ```
-
-3. Run the script. In RStudio, click **Source**, or from the terminal:
-
-```bash
-Rscript 01_download.R
-```
-
-### What you will see
-
-The script downloads both waves automatically. For each wave it prints progress as it downloads each respondent's files. This may take a while if there are many respondents.
-
-### Outputs
-
-For each wave (`baseline` and `endline`):
-
-```
-data/qualtrics/<TEAM_SLUG>/<WAVE>/responses.csv
-data/qualtrics/<TEAM_SLUG>/<WAVE>/uploaded_files_manifest.csv
-data/qualtrics/<TEAM_SLUG>/<WAVE>/uploads/<ResponseId>/  (screenshot image files)
-```
-
-> **If interrupted:** re-running the script will skip files that already downloaded. Set `FORCE_UPLOADS <- TRUE` to re-download everything.
-
----
-
-## 4. Step 2 — Prepare data for annotation
-
-**Script:** `02_wrangle.R`
-
-### What it does
-
-Reads the downloaded data and produces clean, annotation-ready CSV files for both waves.
-
-### How to run it
-
-1. Open `02_wrangle.R`
-2. Fill in the `CONFIG` section:
-
-```r
-TEAM_SLUG         <- "GB"   # same as Step 1
-PARTICIPANT_ID_COL <- "ID"  # column name containing your panel provider's participant ID
-```
-
-> Set `PARTICIPANT_ID_COL` to the name of the column that holds the **stable participant ID** from your panel provider — the ID that is the same in both the baseline and endline surveys. If you do not have one, set it to `NA`.
 
 3. Run the script:
 
 ```bash
-Rscript 02_wrangle.R
+Rscript 00_check_setup.R
 ```
 
-### Outputs
-
-For each wave:
+### What a passing result looks like
 
 ```
-data/qualtrics/<TEAM_SLUG>/<WAVE>/derived/average_screentime_for_annotation.csv
-data/qualtrics/<TEAM_SLUG>/<WAVE>/derived/app_screentime_for_annotation.csv
+Checking setup for team: GB
+--------------------------------------------------
+
+[ENDLINE]
+  ✅ Found: data/qualtrics/GB/endline/derived/average_screentime_for_annotation.csv
+  ✅ Found: data/qualtrics/GB/endline/derived/app_screentime_for_annotation.csv
+  ✅ average_screentime_for_annotation.csv: 412 screenshots, all present
+  ✅ app_screentime_for_annotation.csv: 412 screenshots, all present
+
+[BASELINE]
+  ...
+--------------------------------------------------
+
+✅ All checks passed. You are ready to annotate.
+   Next step: Rscript 03_run_app.R
 ```
+
+If anything is missing, the script will tell you exactly what is wrong. Contact Chris (cb5691@nyu.edu) with the output and he will resend the data.
 
 ---
 
-## 5. Step 3 — Annotate screenshots
+## 4. Step 3 — Annotate screenshots
 
 **Script:** `03_run_app.R`
 
@@ -306,7 +224,7 @@ data/qualtrics/<TEAM_SLUG>/<WAVE>/results/audit_log_app.csv    — full annotati
 
 ---
 
-## 6. Step 4 — Bundle and submit
+## 5. Step 4 — Bundle and submit
 
 **Script:** `04_bundle_results.R`
 
@@ -344,7 +262,7 @@ Upload both ZIPs using this form: **https://forms.gle/szGhMHymtzTqEEjh8**
 
 ---
 
-## 7. Folder structure
+## 6. Folder structure
 
 After running all scripts, your directory will look like this:
 
@@ -353,8 +271,6 @@ data/
   qualtrics/
     <TEAM_SLUG>/
       baseline/
-        responses.csv
-        uploaded_files_manifest.csv
         uploads/
           <ResponseId>/
             <screenshot files>
@@ -375,17 +291,15 @@ data/
 
 ---
 
-## 8. Troubleshooting
+## 7. Troubleshooting
 
 **`TEAM_SLUG is blank`** — Open the script and set `TEAM_SLUG` to your ISO2 country code (e.g. `"GB"`).
 
-**`Missing QUALTRICS_API_KEY`** — Follow section 1c to set your API key and restart R.
+**`00_check_setup.R` reports missing files** — You may have unzipped the data package into the wrong location, or unzipped it into a subfolder. The unzipped contents should merge directly into the project folder (so that `data/qualtrics/...` sits alongside the `.R` scripts). Re-unzip and try again. If the problem persists, contact Chris.
 
-**`One or both SURVEY_IDS are blank`** — Open `01_download.R` and fill in your survey IDs in the CONFIG section.
+**`No usable avg screenshots found on disk`** — The data package may be incomplete. Re-download the ZIP from the link Chris sent and unzip again.
 
-**`No usable avg screenshots found on disk`** — The screenshot download may have failed. Re-run `01_download.R` with `FORCE_UPLOADS <- TRUE` at the top of the script.
-
-**App shows no screenshots** — Make sure `02_wrangle.R` completed successfully and the `derived/` folder exists for your team.
+**App shows no screenshots** — Make sure `00_check_setup.R` passed and the `derived/` folder exists for your team.
 
 **Reviewer name warning when clicking Next** — Enter your name in the Reviewer name field in the sidebar before annotating.
 
@@ -393,6 +307,6 @@ data/
 
 **Want to redo the task list** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then re-run `03_run_app.R`. This regenerates the task list from scratch. Any existing annotations in `annotations_*.csv` are preserved.
 
-**`No baseline respondents matched any endline participant_id`** — Check that `PARTICIPANT_ID_COL` is set to the correct column name in `02_wrangle.R`, and that both waves have been wrangled.
-
 **Script errors about missing packages** — Run `install.packages("packagename")` for any package mentioned in the error, then re-run the script.
+
+**Any other problem** — Contact Chris (cb5691@nyu.edu) and include the full error message from your console.
