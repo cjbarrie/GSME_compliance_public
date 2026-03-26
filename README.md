@@ -6,13 +6,30 @@ This guide walks you through everything you need to do after receiving your data
 
 ---
 
+## Where this fits in the full pipeline
+
+This repository contains only the scripts country teams need. The full compliance pipeline is managed by Chris (leadership) in a separate private repository. Here is where your work fits:
+
+| Step | Who | What |
+|---|---|---|
+| 1–2 | Chris | Downloads Qualtrics data and packages it into a ZIP for your team |
+| 3 | Chris | Shares the ZIP with you via Google Drive |
+| **4** | **You** | **Clone this repo, unzip the data into it, run `00_check_setup.R`** |
+| **5** | **You** | **Annotate all screenshots in `03_run_app.R`** |
+| **6** | **You** | **Bundle and submit results via `04_bundle_results.R`** |
+| 7–15 | Chris | Runs AI validation and produces the final compliance report |
+
+For full pipeline documentation (leadership only): https://github.com/cjbarrie/GSME_compliance
+
+---
+
 ## Contents
 
 1. [One-time setup](#1-one-time-setup)
 2. [Receive and unzip your data package](#2-receive-and-unzip-your-data-package)
-3. [Step 0 — Verify your setup](#3-step-0--verify-your-setup)
-4. [Step 3 — Annotate screenshots](#4-step-3--annotate-screenshots)
-5. [Step 4 — Bundle and submit](#5-step-4--bundle-and-submit)
+3. [Step 1 — Verify your setup](#3-step-1--verify-your-setup)
+4. [Step 2 — Annotate screenshots](#4-step-2--annotate-screenshots)
+5. [Step 3 — Bundle and submit](#5-step-3--bundle-and-submit)
 6. [Folder structure](#6-folder-structure)
 7. [Troubleshooting](#7-troubleshooting)
 
@@ -61,7 +78,7 @@ If you unzip correctly, you should see a `data/` folder appear (or merge) in you
 
 ---
 
-## 3. Step 0 — Verify your setup
+## 3. Step 1 — Verify your setup
 
 **Script:** `00_check_setup.R`
 
@@ -106,7 +123,7 @@ If anything is missing, the script will tell you exactly what is wrong. Contact 
 
 ---
 
-## 4. Step 3 — Annotate screenshots
+## 4. Step 2 — Annotate screenshots
 
 **Script:** `03_run_app.R`
 
@@ -224,7 +241,7 @@ data/qualtrics/<TEAM_SLUG>/<WAVE>/results/audit_log_app.csv    — full annotati
 
 ---
 
-## 5. Step 4 — Bundle and submit
+## 5. Step 3 — Bundle and submit
 
 **Script:** `04_bundle_results.R`
 
