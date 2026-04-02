@@ -141,11 +141,9 @@ for (WAVE in c("baseline", "endline")) {
 cat(sprintf("\u2705 Done. %d ZIP file(s) created.\n", length(bundles_created)))
 
 if (length(all_incomplete) > 0) {
-  message(paste(rep("!", 60), collapse = ""))
   message("WARNING: not all tasks were annotated before bundling:")
   for (item in all_incomplete) message("  - ", item)
   message("All tasks must be completed before bundling and sending your results.")
-  message(paste(rep("!", 60), collapse = ""))
 }
 
 cat("\nSubmit your ZIP files at: https://forms.gle/szGhMHymtzTqEEjh8\n")
