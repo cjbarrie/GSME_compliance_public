@@ -8,50 +8,18 @@ This guide walks you through everything you need to do after receiving your data
 
 ## How this fits in the full pipeline
 
-This is the **public** repository used by country annotation teams. There is a separate **private** repository that Chris uses to download data from Qualtrics, run automated checks, and produce the final compliance report.
-
-```
-LEADERSHIP (private repo)              YOUR TEAM (this repo)
-─────────────────────────              ─────────────────────
-Downloads data from Qualtrics
-Processes screenshots into
-  annotation task lists
-Packages data per country
-        │
-        │  Dropbox link
-        │  (one per country)
-        ▼
-[You receive an email from Chris]  ──► 00_check_setup.R
-  with a Dropbox link to your           └─ verify data package
-  data package ZIP(s)                 03_run_app.R
-                                        └─ annotate screenshots
-                                       04_bundle_results.R
-                                        └─ package your results
-                                                │
-                                         Google Form ──────────►
-                                         (submit ZIP)   Leadership
-                                                        receives +
-                                                        validates
-```
-
-**Important:** You will never see the raw Qualtrics survey data. Your data package contains only the screenshot images and a task list — no personally identifiable survey responses.
-
----
-
-## Where this fits in the full pipeline
-
-This repository contains only the scripts country teams need. The full compliance pipeline is managed by Chris (leadership) in a separate private repository. Here is where your work fits:
+This repository contains only the scripts your team needs. Chris manages the full pipeline separately. Here is where your work fits:
 
 | Step | Who | What |
 |---|---|---|
 | 1–2 | Chris | Downloads Qualtrics data and packages it into a ZIP for your team |
-| 3 | Chris | Shares the ZIP with you via Google Drive |
-| **4** | **You** | **Clone this repo, unzip the data into it, run `00_check_setup.R`** |
+| 3 | Chris | Shares the ZIP with you via Dropbox |
+| **4** | **You** | **Download this repository, unzip the data into it, run `00_check_setup.R`** |
 | **5** | **You** | **Annotate all screenshots in `03_run_app.R`** |
 | **6** | **You** | **Bundle and submit results via `04_bundle_results.R`** |
-| 7–15 | Chris | Runs AI validation and produces the final compliance report |
+| 7+ | Chris | Runs automated checks and produces the final compliance report |
 
-For full pipeline documentation (leadership only): https://github.com/cjbarrie/GSME_compliance
+**Important:** You will never see the raw Qualtrics survey data. Your data package contains only the screenshot images and a task list — no personally identifiable survey responses.
 
 ---
 
@@ -92,7 +60,7 @@ This only needs to be done once per computer.
 
 ### 1c. Get this code repository
 
-If you have not already, clone or download this repository to your computer. The easiest way is to click the green **Code** button on GitHub and choose **Download ZIP**, then unzip it somewhere convenient (e.g. your Desktop or Documents folder).
+If you have not already, download this repository to your computer. The easiest way is to click the green **Code** button on GitHub and choose **Download ZIP**, then unzip it somewhere convenient (e.g. your Desktop or Documents folder).
 
 ---
 
@@ -104,7 +72,7 @@ Chris will send you a **Dropbox link** to a single ZIP file containing data for 
 annotation_data_GB_20260115_143022.zip
 ```
 
-**Important:** after downloading, double-click the ZIP to unzip it. Then move the `data/` folder that appears into the same folder as the scripts (`03_run_app.R`, etc.). After doing this you should see a `data/` folder sitting alongside the scripts.
+**Important:** move the ZIP file into the same folder as the scripts (`03_run_app.R`, etc.) before unzipping. Then double-click the ZIP to unzip it. After doing this you should see a `data/` folder sitting alongside the scripts.
 
 ---
 
@@ -117,7 +85,7 @@ Run this immediately after unzipping. It confirms that all the required files an
 ### How to run it
 
 1. Open `00_check_setup.R` in RStudio
-2. Find the line near the top that reads `TEAM_SLUG <- ""` and change it to your ISO2 country code:
+2. Find the line near the top that reads `TEAM_SLUG` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
@@ -131,13 +99,13 @@ TEAM_SLUG <- "GB"
 Checking setup for team: GB
 --------------------------------------------------
 
-[ENDLINE]
-  ✅ Found: data/qualtrics/GB/endline/derived/average_screentime_for_annotation.csv
-  ✅ Found: data/qualtrics/GB/endline/derived/app_screentime_for_annotation.csv
+[BASELINE]
+  ✅ Found: data/qualtrics/GB/baseline/derived/average_screentime_for_annotation.csv
+  ✅ Found: data/qualtrics/GB/baseline/derived/app_screentime_for_annotation.csv
   ✅ average_screentime_for_annotation.csv: 412 screenshots, all present
   ✅ app_screentime_for_annotation.csv: 412 screenshots, all present
 
-[BASELINE]
+[ENDLINE]
   ...
 --------------------------------------------------
 
@@ -160,7 +128,7 @@ Opens an interactive browser-based app where you review and annotate screenshots
 ### How to run it
 
 1. Open `03_run_app.R` in RStudio
-2. Find the line near the top that reads `TEAM_SLUG <- ""` and change it to your ISO2 country code:
+2. Find the line near the top that reads `TEAM_SLUG` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
@@ -274,7 +242,7 @@ Packages your annotation files into ZIP files ready for submission.
 ### How to run it
 
 1. Open `04_bundle_results.R` in RStudio
-2. Find the line near the top that reads `TEAM_SLUG <- ""` and change it to your ISO2 country code:
+2. Find the line near the top that reads `TEAM_SLUG` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
@@ -330,15 +298,17 @@ data/
 
 **`TEAM_SLUG is blank`** — Open the script and set `TEAM_SLUG` to your ISO2 country code (e.g. `"GB"`).
 
-**`00_check_setup.R` reports missing files** — You may have unzipped the data package into the wrong location, or unzipped it into a subfolder. The unzipped contents should merge directly into the project folder (so that `data/qualtrics/...` sits alongside the `.R` scripts). Re-unzip and try again. If the problem persists, contact Chris.
+**`00_check_setup.R` reports missing files** — You may have unzipped the data package into the wrong location, or unzipped it into a subfolder. Move the ZIP file into the project folder (alongside the `.R` scripts) and unzip it there. If the problem persists, contact Chris.
 
-**`No usable avg screenshots found on disk`** — The data package may be incomplete. Re-download the ZIP from the link Chris sent and unzip again.
+**`No usable avg screenshots found on disk`** — The data package may be incomplete. Re-download the ZIP from the Dropbox link Chris sent and unzip again.
 
 **App shows no screenshots** — Make sure `00_check_setup.R` passed and the `derived/` folder exists for your team.
 
 **Reviewer name warning when clicking Next** — Enter your name in the Reviewer name field in the sidebar before annotating.
 
 **App always starts at task 1 instead of resuming** — This means the annotation files do not exist yet, or you deleted them. Once you have saved at least one annotation, the app will resume correctly on next launch.
+
+**Warning about incomplete annotations when bundling** — The script detected that not all tasks have been annotated. Return to `03_run_app.R`, use **Jump to next unannotated** in the sidebar to find any remaining tasks, and complete them before re-running `04_bundle_results.R`.
 
 **Want to redo the task list** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then open and re-run `03_run_app.R`. This regenerates the task list from scratch. Any existing annotations in `annotations_*.csv` are preserved.
 
