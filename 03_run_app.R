@@ -199,7 +199,11 @@ if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
 
 for (p in c(ENDLINE_AVG_IN, ENDLINE_APP_IN, BASELINE_AVG_IN, BASELINE_APP_IN)) {
   if (!file.exists(p))
-    stop("Missing input file: ", p, "\nRun 02_wrangle.R first.", call. = FALSE)
+    stop("Missing input file: ", p,
+         "\nThe data package may not have been unzipped correctly.",
+         "\nMake sure the data/ folder sits in the same directory as this script.",
+         "\nIf the problem persists, contact Chris (cb5691@nyu.edu).",
+         call. = FALSE)
 }
 
 # ----------------------------
@@ -226,7 +230,7 @@ baseline_app_raw <- safe_read(BASELINE_APP_IN) %>%
 
 if (nrow(baseline_avg_raw) == 0)
   stop("No baseline respondents matched any endline participant_id.\n",
-       "Check PARTICIPANT_ID_COL in 02_wrangle.R.", call. = FALSE)
+       "The data package may be incomplete or mismatched. Contact Chris (cb5691@nyu.edu).", call. = FALSE)
 
 message(sprintf("Endline: %d avg, %d app respondents", nrow(endline_avg_raw), nrow(endline_app_raw)))
 message(sprintf("Baseline (filtered to endline completers): %d avg, %d app respondents",

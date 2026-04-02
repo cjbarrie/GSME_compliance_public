@@ -6,6 +6,38 @@ This guide walks you through everything you need to do after receiving your data
 
 ---
 
+## How this fits in the full pipeline
+
+This is the **public** repository used by country annotation teams. There is a separate **private** repository that Chris uses to download data from Qualtrics, run automated checks, and produce the final compliance report.
+
+```
+LEADERSHIP (private repo)              YOUR TEAM (this repo)
+─────────────────────────              ─────────────────────
+Downloads data from Qualtrics
+Processes screenshots into
+  annotation task lists
+Packages data per country
+        │
+        │  Dropbox link
+        │  (one per country)
+        ▼
+[You receive an email from Chris]  ──► 00_check_setup.R
+  with a Dropbox link to your           └─ verify data package
+  data package ZIP(s)                 03_run_app.R
+                                        └─ annotate screenshots
+                                       04_bundle_results.R
+                                        └─ package your results
+                                                │
+                                         Google Form ──────────►
+                                         (submit ZIP)   Leadership
+                                                        receives +
+                                                        validates
+```
+
+**Important:** You will never see the raw Qualtrics survey data. Your data package contains only the screenshot images and a task list — no personally identifiable survey responses.
+
+---
+
 ## Where this fits in the full pipeline
 
 This repository contains only the scripts country teams need. The full compliance pipeline is managed by Chris (leadership) in a separate private repository. Here is where your work fits:
@@ -66,15 +98,13 @@ If you have not already, clone or download this repository to your computer. The
 
 ## 2. Receive and unzip your data package
 
-Chris will send you a link to a ZIP file (via Google Drive or similar). The file is named something like:
+Chris will send you a **Dropbox link** to a single ZIP file containing data for both waves (baseline and endline). The file is named something like:
 
 ```
-annotation_data_GB_endline_20260115_143022.zip
+annotation_data_GB_20260115_143022.zip
 ```
 
-**Important:** unzip this file directly into the folder that contains the scripts (`03_run_app.R`, etc.) — not into a subfolder. After unzipping, the folder structure inside should merge with the existing `data/` folder already there.
-
-If you unzip correctly, you should see a `data/` folder appear (or merge) in your project directory.
+**Important:** after downloading, double-click the ZIP to unzip it. Then move the `data/` folder that appears into the same folder as the scripts (`03_run_app.R`, etc.). After doing this you should see a `data/` folder sitting alongside the scripts.
 
 ---
 
@@ -87,17 +117,13 @@ Run this immediately after unzipping. It confirms that all the required files an
 ### How to run it
 
 1. Open `00_check_setup.R` in RStudio
-2. Set `TEAM_SLUG` to your ISO2 country code:
+2. Find the line near the top that reads `TEAM_SLUG <- ""` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
 ```
 
-3. Run the script:
-
-```bash
-Rscript 00_check_setup.R
-```
+3. Click **Source** (or press **Ctrl+Shift+Enter** on Windows / **Cmd+Shift+Enter** on Mac) to run the whole script
 
 ### What a passing result looks like
 
@@ -116,7 +142,7 @@ Checking setup for team: GB
 --------------------------------------------------
 
 ✅ All checks passed. You are ready to annotate.
-   Next step: Rscript 03_run_app.R
+   Next step: open 03_run_app.R and run it.
 ```
 
 If anything is missing, the script will tell you exactly what is wrong. Contact Chris (cb5691@nyu.edu) with the output and he will resend the data.
@@ -133,18 +159,14 @@ Opens an interactive browser-based app where you review and annotate screenshots
 
 ### How to run it
 
-1. Open `03_run_app.R`
-2. Set `TEAM_SLUG`:
+1. Open `03_run_app.R` in RStudio
+2. Find the line near the top that reads `TEAM_SLUG <- ""` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
 ```
 
-3. Run the script:
-
-```bash
-Rscript 03_run_app.R
-```
+3. Click **Source** (or press **Ctrl+Shift+Enter** on Windows / **Cmd+Shift+Enter** on Mac) to run the script
 
 A browser window opens automatically. If it does not, look for a URL printed in the console (e.g. `http://127.0.0.1:XXXX`) and open it manually.
 
@@ -181,9 +203,9 @@ Is this the right type of screenshot? Click the **ⓘ** icon next to this questi
 
 In brief:
 - **iOS average:** Screen Time weekly summary showing "Last Week's Average" bar chart (S–M–T–W–T–F–S)
-- **iOS app-level:** Screen Time scrolled down to show individual apps
+- **iOS app-level:** Screen Time scrolled down to show individual apps used for **35 minutes or more** last week
 - **Android average:** Digital Wellbeing daily view for the specific target date shown on screen
-- **Android app-level:** Digital Wellbeing scrolled down to show individual apps for that day
+- **Android app-level:** Digital Wellbeing scrolled down to show individual apps used for **5 minutes or more** on that day
 
 **2. Numbers match?**
 
@@ -251,18 +273,14 @@ Packages your annotation files into ZIP files ready for submission.
 
 ### How to run it
 
-1. Open `04_bundle_results.R`
-2. Set `TEAM_SLUG`:
+1. Open `04_bundle_results.R` in RStudio
+2. Find the line near the top that reads `TEAM_SLUG <- ""` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
 ```
 
-3. Run the script:
-
-```bash
-Rscript 04_bundle_results.R
-```
+3. Click **Source** (or press **Ctrl+Shift+Enter** on Windows / **Cmd+Shift+Enter** on Mac) to run the script
 
 ### Outputs
 
@@ -322,7 +340,7 @@ data/
 
 **App always starts at task 1 instead of resuming** — This means the annotation files do not exist yet, or you deleted them. Once you have saved at least one annotation, the app will resume correctly on next launch.
 
-**Want to redo the task list** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then re-run `03_run_app.R`. This regenerates the task list from scratch. Any existing annotations in `annotations_*.csv` are preserved.
+**Want to redo the task list** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then open and re-run `03_run_app.R`. This regenerates the task list from scratch. Any existing annotations in `annotations_*.csv` are preserved.
 
 **Script errors about missing packages** — Run `install.packages("packagename")` for any package mentioned in the error, then re-run the script.
 

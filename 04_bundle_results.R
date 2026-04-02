@@ -65,22 +65,27 @@ if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
 
 BASE_DIR <- get_script_dir()
 
+bundles_created <- character(0)
+
 for (WAVE in c("baseline", "endline")) {
   message(sprintf("\n========== Bundling %s ==========", toupper(WAVE)))
 
   RESULTS_DIR <- file.path(BASE_DIR, "data", "qualtrics", TEAM_SLUG, WAVE, "results")
 
   if (!dir.exists(RESULTS_DIR)) {
-    message(sprintf("Skipping %s — results directory not found: %s", WAVE, RESULTS_DIR))
-    message("(Run 03_run_app.R and complete at least one annotation task first.)")
-    next
+    stop(sprintf(
+      "Results directory not found for %s wave: %s\n\nHave you opened 03_run_app.R and annotated at least one screenshot?\nAnnotations must be saved before you can bundle results.",
+      WAVE, RESULTS_DIR
+    ), call. = FALSE)
   }
 
   existing_rel <- FILES_TO_BUNDLE[file.exists(file.path(RESULTS_DIR, FILES_TO_BUNDLE))]
 
   if (length(existing_rel) == 0) {
-    message(sprintf("Skipping %s — no annotation files found in: %s", WAVE, RESULTS_DIR))
-    next
+    stop(sprintf(
+      "No annotation files found for %s wave in: %s\n\nHave you opened 03_run_app.R and saved at least one annotation?\nAnnotation files must exist before you can bundle results.",
+      WAVE, RESULTS_DIR
+    ), call. = FALSE)
   }
 
   manifest_path <- write_manifest(RESULTS_DIR, WAVE, existing_rel)
@@ -91,6 +96,7 @@ for (WAVE in c("baseline", "endline")) {
   zip_path <- file.path(RESULTS_DIR, zip_name)
 
   make_zip_in_dir(RESULTS_DIR, zip_path, files_rel)
+  bundles_created <- c(bundles_created, zip_path)
 
   cat(sprintf("\u2705 %s bundle created:\n  %s\n", tools::toTitleCase(WAVE), zip_path))
   cat("Includes:\n")
@@ -98,4 +104,5 @@ for (WAVE in c("baseline", "endline")) {
   cat("\n")
 }
 
+cat(sprintf("\u2705 Done. %d ZIP file(s) created.\n\n", length(bundles_created)))
 cat("Submit your ZIP files at: https://forms.gle/szGhMHymtzTqEEjh8\n")
