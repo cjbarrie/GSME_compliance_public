@@ -86,6 +86,7 @@ if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
 BASE_DIR <- get_script_dir()
 
 bundles_created <- character(0)
+all_incomplete  <- character(0)
 
 for (WAVE in c("baseline", "endline")) {
   message(sprintf("\n========== Bundling %s ==========", toupper(WAVE)))
@@ -110,10 +111,7 @@ for (WAVE in c("baseline", "endline")) {
 
   incomplete <- check_completeness(RESULTS_DIR, WAVE)
   if (length(incomplete) > 0) {
-    warning(sprintf(
-      "Incomplete annotations for %s wave:\n%s\n  Bundling anyway — but consider finishing all tasks first.",
-      toupper(WAVE), paste0("  - ", incomplete, collapse = "\n")
-    ), call. = FALSE)
+    all_incomplete <- c(all_incomplete, paste0("[", toupper(WAVE), "] ", incomplete))
   }
 
   manifest_path <- write_manifest(RESULTS_DIR, WAVE, existing_rel)
@@ -134,3 +132,12 @@ for (WAVE in c("baseline", "endline")) {
 
 cat(sprintf("\u2705 Done. %d ZIP file(s) created.\n\n", length(bundles_created)))
 cat("Submit your ZIP files at: https://forms.gle/szGhMHymtzTqEEjh8\n")
+
+if (length(all_incomplete) > 0) {
+  warning(
+    "Some tasks were not annotated before bundling:\n",
+    paste0("  - ", all_incomplete, collapse = "\n"), "\n",
+    "Consider finishing all tasks and re-bundling before submitting.",
+    call. = FALSE
+  )
+}
