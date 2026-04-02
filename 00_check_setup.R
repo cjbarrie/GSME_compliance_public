@@ -22,6 +22,14 @@ TEAM_SLUG <- ""   # <-- your ISO2 country code (e.g. "GB", "DK", "NL")
 # ----------------------------
 # Run
 # ----------------------------
+get_script_dir <- function() {
+  args     <- commandArgs(trailingOnly = FALSE)
+  file_arg <- args[grepl("^--file=", args)]
+  if (length(file_arg) == 0) return(normalizePath(getwd(), winslash = "/", mustWork = FALSE))
+  normalizePath(dirname(sub("^--file=", "", file_arg[1])), winslash = "/", mustWork = FALSE)
+}
+SCRIPT_DIR <- get_script_dir()
+
 if (!nzchar(trimws(TEAM_SLUG))) {
   stop("TEAM_SLUG is blank. Set it to your ISO2 country code at the top of this script.", call. = FALSE)
 }
@@ -35,7 +43,7 @@ issues <- character(0)
 for (wave in c("endline", "baseline")) {
   cat(sprintf("\n[%s]\n", toupper(wave)))
 
-  derived_dir <- file.path("data", "qualtrics", TEAM_SLUG, wave, "derived")
+  derived_dir <- file.path(SCRIPT_DIR, "data", "qualtrics", TEAM_SLUG, wave, "derived")
   avg_csv <- file.path(derived_dir, "average_screentime_for_annotation.csv")
   app_csv <- file.path(derived_dir, "app_screentime_for_annotation.csv")
 

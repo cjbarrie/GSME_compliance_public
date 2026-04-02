@@ -16,9 +16,17 @@ FILTER_DEVICE <- NA
 
 
 # ----------------------------
-# Paths
+# Paths (resolved relative to script location, not R working directory)
 # ----------------------------
-BASE_DIR <- file.path("data", "qualtrics", TEAM_SLUG)
+get_script_dir <- function() {
+  args     <- commandArgs(trailingOnly = FALSE)
+  file_arg <- args[grepl("^--file=", args)]
+  if (length(file_arg) == 0) return(normalizePath(getwd(), winslash = "/", mustWork = FALSE))
+  normalizePath(dirname(sub("^--file=", "", file_arg[1])), winslash = "/", mustWork = FALSE)
+}
+SCRIPT_DIR <- get_script_dir()
+
+BASE_DIR <- file.path(SCRIPT_DIR, "data", "qualtrics", TEAM_SLUG)
 
 ENDLINE_AVG_IN   <- file.path(BASE_DIR, "endline",  "derived", "average_screentime_for_annotation.csv")
 ENDLINE_APP_IN   <- file.path(BASE_DIR, "endline",  "derived", "app_screentime_for_annotation.csv")
@@ -27,8 +35,6 @@ BASELINE_APP_IN  <- file.path(BASE_DIR, "baseline", "derived", "app_screentime_f
 
 ENDLINE_RESULTS  <- file.path(BASE_DIR, "endline",  "results")
 BASELINE_RESULTS <- file.path(BASE_DIR, "baseline", "results")
-dir.create(ENDLINE_RESULTS,  recursive = TRUE, showWarnings = FALSE)
-dir.create(BASELINE_RESULTS, recursive = TRUE, showWarnings = FALSE)
 
 # Phase order: baseline first, then endline (baseline filtered to endline completers)
 PHASE_ORDER <- c("baseline_avg", "baseline_app", "endline_avg", "endline_app", "done")
@@ -196,6 +202,9 @@ if (is.na(TEAM_SLUG) || !nzchar(trimws(TEAM_SLUG))) {
   stop("TEAM_SLUG is blank. Set it to your ISO2 country code (e.g. \"GB\", \"US\") in the CONFIG section.",
        call. = FALSE)
 }
+
+dir.create(ENDLINE_RESULTS,  recursive = TRUE, showWarnings = FALSE)
+dir.create(BASELINE_RESULTS, recursive = TRUE, showWarnings = FALSE)
 
 for (p in c(ENDLINE_AVG_IN, ENDLINE_APP_IN, BASELINE_AVG_IN, BASELINE_APP_IN)) {
   if (!file.exists(p))
