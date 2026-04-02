@@ -30,8 +30,8 @@ BASELINE_RESULTS <- file.path(BASE_DIR, "baseline", "results")
 dir.create(ENDLINE_RESULTS,  recursive = TRUE, showWarnings = FALSE)
 dir.create(BASELINE_RESULTS, recursive = TRUE, showWarnings = FALSE)
 
-# Phase order: endline first, then baseline (filtered to endline completers)
-PHASE_ORDER <- c("endline_avg", "endline_app", "baseline_avg", "baseline_app", "done")
+# Phase order: baseline first, then endline (baseline filtered to endline completers)
+PHASE_ORDER <- c("baseline_avg", "baseline_app", "endline_avg", "endline_app", "done")
 
 SAMPLE_PATHS <- list(
   endline_avg  = file.path(ENDLINE_RESULTS,  "sample_avg.csv"),

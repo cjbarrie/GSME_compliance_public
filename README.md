@@ -184,10 +184,10 @@ Enter your **name** in the Reviewer name field in the top-left sidebar. This is 
 
 The app works through four phases in order:
 
-1. **Endline — average screenshots** (total screen time)
-2. **Endline — app-level screenshots** (per-app breakdown)
-3. **Baseline — average screenshots**
-4. **Baseline — app-level screenshots**
+1. **Baseline — average screenshots** (total screen time)
+2. **Baseline — app-level screenshots** (per-app breakdown)
+3. **Endline — average screenshots** (total screen time)
+4. **Endline — app-level screenshots** (per-app breakdown)
 
 You cannot skip ahead to a later phase until the earlier one is complete. Baseline tasks only include participants who also completed the endline survey.
 
