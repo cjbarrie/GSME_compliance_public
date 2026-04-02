@@ -16,7 +16,7 @@ library(readr)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-TEAM_SLUG <- ""  # <-- your ISO2 country code (e.g. "GB", "US")
+TEAM_SLUG <- "DK"  # <-- your ISO2 country code (e.g. "GB", "US")
 
 
 # ----------------------------
@@ -51,14 +51,22 @@ check_completeness <- function(results_dir, wave) {
   for (type in c("avg", "app")) {
     sample_path <- file.path(results_dir, paste0("sample_", type, ".csv"))
     ann_path    <- file.path(results_dir, paste0("annotations_", type, ".csv"))
-    if (!file.exists(sample_path) || !file.exists(ann_path)) next
+    if (!file.exists(sample_path)) next
     sample_ids <- read_csv(sample_path, show_col_types = FALSE)$task_id
-    ann_ids    <- read_csv(ann_path,    show_col_types = FALSE)$task_id
-    n_missing  <- length(setdiff(sample_ids, ann_ids))
+    label <- ifelse(type == "avg", "Average", "App-level")
+    if (!file.exists(ann_path)) {
+      issues <- c(issues, sprintf(
+        "%s screenshots: 0 of %d tasks annotated",
+        label, length(sample_ids)
+      ))
+      next
+    }
+    ann_ids   <- read_csv(ann_path, show_col_types = FALSE)$task_id
+    n_missing <- length(setdiff(sample_ids, ann_ids))
     if (n_missing > 0) {
       issues <- c(issues, sprintf(
         "%s screenshots: %d of %d tasks not yet annotated",
-        ifelse(type == "avg", "Average", "App-level"), n_missing, length(sample_ids)
+        label, n_missing, length(sample_ids)
       ))
     }
   }
