@@ -110,10 +110,10 @@ for (WAVE in c("baseline", "endline")) {
 
   incomplete <- check_completeness(RESULTS_DIR, WAVE)
   if (length(incomplete) > 0) {
-    message(sprintf(
-      "\u26a0\ufe0f  Warning: incomplete annotations for %s wave:\n%s\n   Bundling anyway — but consider finishing all tasks first.",
-      toupper(WAVE), paste0("     \u2022 ", incomplete, collapse = "\n")
-    ))
+    warning(sprintf(
+      "Incomplete annotations for %s wave:\n%s\n  Bundling anyway — but consider finishing all tasks first.",
+      toupper(WAVE), paste0("  - ", incomplete, collapse = "\n")
+    ), call. = FALSE)
   }
 
   manifest_path <- write_manifest(RESULTS_DIR, WAVE, existing_rel)
