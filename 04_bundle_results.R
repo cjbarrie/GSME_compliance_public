@@ -11,6 +11,7 @@
 # ============================================================
 
 library(stringr)
+library(readr)
 
 # ----------------------------
 # CONFIG (EDIT THESE)
@@ -43,6 +44,25 @@ write_manifest <- function(results_dir, wave, included_files) {
     "", "FILES_INCLUDED:", paste0(" - ", included_files)
   ), manifest_path, useBytes = TRUE)
   manifest_path
+}
+
+check_completeness <- function(results_dir, wave) {
+  issues <- character(0)
+  for (type in c("avg", "app")) {
+    sample_path <- file.path(results_dir, paste0("sample_", type, ".csv"))
+    ann_path    <- file.path(results_dir, paste0("annotations_", type, ".csv"))
+    if (!file.exists(sample_path) || !file.exists(ann_path)) next
+    sample_ids <- read_csv(sample_path, show_col_types = FALSE)$task_id
+    ann_ids    <- read_csv(ann_path,    show_col_types = FALSE)$task_id
+    n_missing  <- length(setdiff(sample_ids, ann_ids))
+    if (n_missing > 0) {
+      issues <- c(issues, sprintf(
+        "%s screenshots: %d of %d tasks not yet annotated",
+        ifelse(type == "avg", "Average", "App-level"), n_missing, length(sample_ids)
+      ))
+    }
+  }
+  issues
 }
 
 make_zip_in_dir <- function(results_dir, zip_path, files_rel) {
@@ -85,6 +105,14 @@ for (WAVE in c("baseline", "endline")) {
     stop(sprintf(
       "No annotation files found for %s wave in: %s\n\nHave you opened 03_run_app.R and saved at least one annotation?\nAnnotation files must exist before you can bundle results.",
       WAVE, RESULTS_DIR
+    ), call. = FALSE)
+  }
+
+  incomplete <- check_completeness(RESULTS_DIR, WAVE)
+  if (length(incomplete) > 0) {
+    stop(sprintf(
+      "Incomplete annotations for %s wave — please finish all tasks in 03_run_app.R before bundling:\n%s",
+      toupper(WAVE), paste0("  \u2022 ", incomplete, collapse = "\n")
     ), call. = FALSE)
   }
 
