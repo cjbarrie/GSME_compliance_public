@@ -13,7 +13,7 @@ This repository contains only the scripts your team needs. Chris manages the ful
 | Step | Who | What |
 |---|---|---|
 | 1–2 | Chris | Downloads Qualtrics data and packages it into a ZIP for your team |
-| 3 | Chris | Shares the ZIP with you via Dropbox |
+| 3 | Chris | Shares the ZIP with you via Box |
 | **4** | **You** | **Download this repository, unzip the data into it, run `00_check_setup.R`** |
 | **5** | **You** | **Annotate all screenshots in `03_run_app.R`** |
 | **6** | **You** | **Bundle and submit results via `04_bundle_results.R`** |
@@ -58,7 +58,7 @@ If you have not already, download this repository to your computer. The easiest 
 
 ## 2. Receive and unzip your data package
 
-Chris will send you a **Dropbox link** to a single ZIP file containing data for both waves (baseline and endline). The file is named something like:
+Chris will send you a **Box link** to a single ZIP file containing data for both waves (baseline and endline). The file is named something like:
 
 ```
 annotation_data_GB_20260115_143022.zip
@@ -313,7 +313,7 @@ data/
 
 **`00_check_setup.R` reports missing files** — You may have unzipped the data package into the wrong location, or unzipped it into a subfolder. Move the ZIP file into the project folder (alongside the `.R` scripts) and unzip it there. If the problem persists, contact Chris.
 
-**`No usable avg screenshots found on disk`** — The data package may be incomplete. Re-download the ZIP from the Dropbox link Chris sent and unzip again.
+**`No usable avg screenshots found on disk`** — The data package may be incomplete. Re-download the ZIP from the Box link Chris sent and unzip again.
 
 **App shows no screenshots** — Make sure `00_check_setup.R` passed and the `derived/` folder exists for your team.
 
