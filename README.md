@@ -64,7 +64,26 @@ Chris will send you a **Dropbox link** to a single ZIP file containing data for 
 annotation_data_GB_20260115_143022.zip
 ```
 
-**Important:** move the ZIP file into the same folder as the scripts (`03_run_app.R`, etc.) before unzipping. Then double-click the ZIP to unzip it. After doing this you should see a `data/` folder sitting alongside the scripts.
+**Important:** move the ZIP file into the **root folder of this repository** (the same folder that contains the `.R` scripts) before unzipping. Then double-click the ZIP to unzip it in place.
+
+After unzipping correctly, your folder should look like this:
+
+```
+GSME_compliance_public/        ← the repository folder
+  00_check_setup.R
+  03_run_app.R
+  04_bundle_results.R
+  README.md
+  data/                        ← created by unzipping
+    qualtrics/
+      GB/                      ← your country code
+        baseline/
+        endline/
+```
+
+If you see a `data/` folder sitting alongside the `.R` scripts, you have done it correctly.
+
+> **Common mistake:** unzipping onto your Desktop or Downloads folder and then moving only the inner files. Always move the ZIP itself into the repository folder first, then unzip.
 
 ---
 
