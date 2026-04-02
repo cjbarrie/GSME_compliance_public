@@ -145,7 +145,7 @@ if (length(all_incomplete) > 0) {
   warning(
     "Some tasks were not annotated before bundling:\n",
     paste0("  - ", all_incomplete, collapse = "\n"), "\n",
-    "Consider finishing all tasks and re-bundling before submitting.",
+    "All tasks must be completed before bundling and sending your results.",
     call. = FALSE
   )
 }
