@@ -48,15 +48,7 @@ If R is not already installed on your computer, download and install it from:
 
 ### 1b. Install required R packages
 
-Open R or RStudio and run this once:
-
-```r
-install.packages(c(
-  "readr", "dplyr", "stringr", "tidyr", "shiny", "tibble"
-))
-```
-
-This only needs to be done once per computer.
+`00_check_setup.R` checks for required packages and installs any that are missing automatically when you run it. You do not need to install anything manually.
 
 ### 1c. Get this code repository
 

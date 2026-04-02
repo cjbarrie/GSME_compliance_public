@@ -11,6 +11,16 @@
 # If anything fails, contact Chris (cb5691@nyu.edu).
 # ============================================================
 
+# ----------------------------
+# Install any missing packages
+# ----------------------------
+required_packages <- c("readr", "shiny", "dplyr", "stringr", "tidyr", "tibble")
+missing <- required_packages[!sapply(required_packages, requireNamespace, quietly = TRUE)]
+if (length(missing) > 0) {
+  message("Installing missing packages: ", paste(missing, collapse = ", "))
+  install.packages(missing, repos = "https://cloud.r-project.org")
+}
+
 library(readr)
 
 # ----------------------------
