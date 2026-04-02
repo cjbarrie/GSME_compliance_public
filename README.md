@@ -48,7 +48,7 @@ If R is not already installed on your computer, download and install it from:
 
 ### 1b. Install required R packages
 
-`00_check_setup.R` checks for required packages and installs any that are missing automatically when you run it. You do not need to install anything manually.
+You do not need to install any packages manually. When you run `00_check_setup.R` (Step 1 below), it automatically checks which packages are required and installs any that are missing on your computer before doing anything else.
 
 ### 1c. Get this code repository
 
@@ -91,7 +91,9 @@ If you see a `data/` folder sitting alongside the `.R` scripts, you have done it
 
 **Script:** `00_check_setup.R`
 
-Run this immediately after unzipping. It confirms that all the required files and screenshots are present.
+Run this immediately after unzipping. It will:
+- Automatically install any missing R packages
+- Confirm that all required files and screenshots are present
 
 ### How to run it
 
