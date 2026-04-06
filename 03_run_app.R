@@ -302,8 +302,10 @@ ui <- fluidPage(
                  font-weight: 700 !important; width: 100% !important; }
       .prior-ann-badge { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px;
                          padding: 6px 10px; font-size: 13px; color: #2e7d32; margin-bottom: 8px; }
-      .info-icon { cursor: pointer; color: #0077cc; font-size: 13px; margin-left: 5px;
-                   font-weight: normal; font-style: normal; text-decoration: underline dotted; }
+      .info-icon { cursor: pointer; color: #0055aa; font-size: 15px; margin-left: 6px;
+                   font-weight: bold; font-style: normal; text-decoration: none;
+                   background: #ddeeff; border: 1px solid #99bbdd; border-radius: 4px;
+                   padding: 1px 5px; }
       .kbd-legend { font-size: 11px; color: #888; line-height: 1.8; }
     ")),
     tags$script(HTML("
@@ -776,8 +778,14 @@ server <- function(input, output, session) {
     if (ph == "done") return(NULL)
     r <- current(); if (is.null(r)) return(NULL)
     if (phase_type(ph) == "avg") {
+      p_avg <- if ("total_screenshot_path" %in% names(r)) as.character(r$total_screenshot_path[[1]]) else NA_character_
       tags$div(class="panel",
-               tags$div(class="screenshot-wrap", imageOutput("img_avg")))
+               if (file_ok1(p_avg))
+                 tags$div(class="screenshot-wrap", imageOutput("img_avg"))
+               else
+                 tags$p(style="color:#c00; padding:20px;",
+                        "Screenshot file not found on disk. Note this in the Notes field, select No for both questions, and continue.")
+      )
     } else {
       p1 <- if ("app_screenshot1_path" %in% names(r)) as.character(r$app_screenshot1_path[[1]]) else NA_character_
       p2 <- if ("app_screenshot2_path" %in% names(r)) as.character(r$app_screenshot2_path[[1]]) else NA_character_

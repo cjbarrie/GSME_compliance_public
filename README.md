@@ -10,6 +10,8 @@ This guide walks you through everything you need to do after receiving your data
 
 This repository contains only the scripts your team needs. Chris manages the full pipeline separately. Here is where your work fits:
 
+> **Team tip:** If your team includes members with varying R experience, it helps to have someone more comfortable with R lead the setup steps and be on hand to answer questions.
+
 | Step | Who | What |
 |---|---|---|
 | 1–2 | Chris | Downloads Qualtrics data and packages it into a ZIP for your team |
@@ -98,13 +100,14 @@ Run this immediately after unzipping. It will:
 ### How to run it
 
 1. Open `00_check_setup.R` in RStudio
-2. Find the line near the top that reads `TEAM_SLUG` and change it to your ISO2 country code:
+2. Set your working directory to this project folder: in RStudio, go to **Session > Set Working Directory > To Source File Location**
+3. Find the line near the top that reads `TEAM_SLUG` and change it to your ISO2 country code:
 
 ```r
 TEAM_SLUG <- "GB"
 ```
 
-3. Click **Source** (or press **Ctrl+Shift+Enter** on Windows / **Cmd+Shift+Enter** on Mac) to run the whole script
+4. Click **Source** (or press **Ctrl+Shift+Enter** on Windows / **Cmd+Shift+Enter** on Mac) to run the whole script
 
 ### What a passing result looks like
 
@@ -317,6 +320,8 @@ data/
 
 **App shows no screenshots** — Make sure `00_check_setup.R` passed and the `derived/` folder exists for your team.
 
+**A specific screenshot is blank or missing** — The file for that task may be missing or corrupted in the data package. Note this in the Notes field (e.g. "screenshot file missing"), select No for both questions, and continue. Flag it to Chris when you submit.
+
 **Reviewer name warning when clicking Next** — Enter your name in the Reviewer name field in the sidebar before annotating.
 
 **App always starts at task 1 instead of resuming** — This means the annotation files do not exist yet, or you deleted them. Once you have saved at least one annotation, the app will resume correctly on next launch.
@@ -325,6 +330,6 @@ data/
 
 **Want to redo the task list** — Delete `results/sample_avg.csv` and/or `results/sample_app.csv`, then open and re-run `03_run_app.R`. This regenerates the task list from scratch. Any existing annotations in `annotations_*.csv` are preserved.
 
-**Script errors about missing packages** — Run `install.packages("packagename")` for any package mentioned in the error, then re-run the script.
+**Script errors about missing packages** — Run `install.packages("packagename")` for any package mentioned in the error, then re-run the script. For package conflicts or more complex errors, pasting the error message into an AI assistant (e.g. Claude at claude.ai) is often the fastest way to diagnose and fix the problem.
 
 **Any other problem** — Contact Chris (cb5691@nyu.edu) and include the full error message from your console.
