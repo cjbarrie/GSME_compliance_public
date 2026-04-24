@@ -609,6 +609,7 @@ server <- function(input, output, session) {
 
   observeEvent(input$prev_btn, {
     ph <- state$phase; if (ph == "done") return()
+    do_save()
     key <- paste0("i_", ph)
     state[[key]] <- max(1L, state[[key]] - 1L)
   })
