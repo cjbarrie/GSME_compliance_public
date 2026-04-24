@@ -166,14 +166,14 @@ Enter your **name** in the Reviewer name field in the top-left sidebar. This is 
 
 ### What you will annotate
 
-The app works through four phases in order:
+The app covers four phases:
 
 1. **Baseline — average screenshots** (total screen time)
 2. **Baseline — app-level screenshots** (per-app breakdown)
 3. **Endline — average screenshots** (total screen time)
 4. **Endline — app-level screenshots** (per-app breakdown)
 
-You cannot skip ahead to a later phase until the earlier one is complete. Baseline tasks only include participants who also completed the endline survey.
+Four tabs above the screenshot panel let you switch freely between phases at any time — you do not need to finish one before moving to another. Your current annotation is saved automatically whenever you switch tabs. Baseline tasks only include participants who also completed the endline survey.
 
 ### For each screenshot, answer two questions
 
@@ -200,7 +200,8 @@ Answer **Yes** or **No** for both questions. Add an optional note if needed.
 ### Navigation
 
 - Click **Next** to save your answers and move to the next task
-- Click **Prev** to go back and change a previous annotation
+- Click **Prev** to go back and change a previous annotation — clicking Prev at the first task of a phase steps back into the previous phase automatically
+- Use the **phase tabs** above the screenshot panel to jump directly to any phase
 - Use **Jump to next unannotated** in the sidebar to skip to the first task without an answer
 - You **must** answer both questions before Next will save
 
