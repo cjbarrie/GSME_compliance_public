@@ -226,6 +226,10 @@ The app supports multiple team members annotating in shifts. Each person:
 
 This means annotators can divide the workload without duplicating effort or losing any work. Previously annotated tasks show a green badge with the name and time of whoever completed them.
 
+> **Working from a shared folder (Dropbox, Box, etc.):** If your whole project folder lives in a shared cloud folder that all team members have synced to their own machines, annotations are shared automatically — each person's annotations are written directly into the shared `results/` folder and visible to everyone else as soon as they sync. This is the easiest setup for collaborating.
+>
+> **Handing off to a colleague on a separate machine:** If you are not in a shared folder, your colleague needs the CSV files you have already produced to pick up where you left off. Share the contents of `data/qualtrics/<TEAM_SLUG>/baseline/results/` and `data/qualtrics/<TEAM_SLUG>/endline/results/` (i.e. the `annotations_*.csv`, `audit_log_*.csv`, and `sample_*.csv` files). Your colleague should place these in the same `results/` directories on their machine before running the app — the app will then resume from the first unannotated task.
+
 ![The annotation app showing a previously annotated task with a green badge indicating who completed it and when](ui2.png)
 
 *When you navigate to a task that another team member has already annotated, a green badge appears showing their name and the time of annotation. Their answers are pre-filled so you can review or correct them if needed.*

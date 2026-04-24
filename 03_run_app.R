@@ -280,10 +280,14 @@ ui <- fluidPage(
       .tight-table td, .tight-table th { padding: 6px !important; }
       .phase-pill { display: inline-block; padding: 4px 10px; border-radius: 999px;
                     background: #f2f2f2; font-weight: 600; }
-      .screenshot-wrap { height: 72vh; overflow: auto; border: 1px solid #eee;
+      .screenshot-wrap { max-height: 640px; overflow-y: scroll; border: 1px solid #eee;
                          border-radius: 12px; padding: 8px; background: #fafafa; }
       .screenshot-wrap img { display: block; margin: 0 auto; cursor: zoom-in;
-                             max-width: 100%; height: auto; }
+                             height: 600px; width: auto; }
+      .screenshot-wrap::-webkit-scrollbar { width: 12px; }
+      .screenshot-wrap::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 6px; }
+      .screenshot-wrap::-webkit-scrollbar-thumb { background: #999; border-radius: 6px; }
+      .screenshot-wrap::-webkit-scrollbar-thumb:hover { background: #666; }
       .progress-bar-wrap { height: 10px; border-radius: 999px; background: #eee; overflow: hidden; }
       .progress-bar-fill { height: 10px; background: #111; width: 0%; }
       .meta-grid { display: grid; grid-template-columns: 110px 1fr; gap: 6px 10px; }
