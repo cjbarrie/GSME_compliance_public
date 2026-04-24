@@ -611,7 +611,16 @@ server <- function(input, output, session) {
     ph <- state$phase; if (ph == "done") return()
     do_save()
     key <- paste0("i_", ph)
-    state[[key]] <- max(1L, state[[key]] - 1L)
+    if (state[[key]] <= 1L) {
+      ph_idx <- which(PHASE_ORDER == ph)
+      if (ph_idx > 1L) {
+        prev_ph <- PHASE_ORDER[[ph_idx - 1L]]
+        state$phase <- prev_ph
+        state[[paste0("i_", prev_ph)]] <- nrow(all_tasks[[prev_ph]])
+      }
+    } else {
+      state[[key]] <- state[[key]] - 1L
+    }
   })
 
   observeEvent(input$jump_btn, {
@@ -782,7 +791,24 @@ server <- function(input, output, session) {
     ph <- state$phase
     if (ph == "done") return(NULL)
     r <- current(); if (is.null(r)) return(NULL)
-    if (phase_type(ph) == "avg") {
+
+    phase_tabs <- tags$div(
+      style = "display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;",
+      lapply(PHASE_ORDER[PHASE_ORDER != "done"], function(p) {
+        active <- p == ph
+        actionButton(
+          inputId = paste0("phase_tab_", p),
+          label   = phase_label(p),
+          style   = paste0(
+            "font-size:12px; padding:5px 10px; border-radius:6px; ",
+            if (active) "background:#111; color:#fff; border:none; font-weight:700;"
+            else        "background:#f2f2f2; color:#444; border:1px solid #ccc;"
+          )
+        )
+      })
+    )
+
+    image_panel <- if (phase_type(ph) == "avg") {
       p_avg <- if ("total_screenshot_path" %in% names(r)) as.character(r$total_screenshot_path[[1]]) else NA_character_
       tags$div(class="panel",
                if (file_ok1(p_avg))
@@ -803,7 +829,20 @@ server <- function(input, output, session) {
                if (length(tabs) > 0) do.call(tabsetPanel, c(id="app_tabs", tabs))
                else tags$p("No image files found for this task."))
     }
+
+    tagList(phase_tabs, image_panel)
   })
+
+  for (ph_target in PHASE_ORDER[PHASE_ORDER != "done"]) {
+    local({
+      p <- ph_target
+      observeEvent(input[[paste0("phase_tab_", p)]], {
+        if (identical(state$phase, p)) return()
+        do_save()
+        state$phase <- p
+      }, ignoreInit = TRUE, ignoreNULL = TRUE)
+    })
+  }
 
   output$done_panel <- renderUI({
     if (state$phase != "done") return(NULL)
