@@ -140,7 +140,8 @@ append_audit <- function(path, rec) {
 
 first_unannotated_idx <- function(tasks_df, anns_df) {
   done_ids <- anns_df %>%
-    filter(!is.na(task_id) & nzchar(task_id)) %>%
+    filter(!is.na(task_id) & nzchar(task_id),
+           !is.na(screenshot_correct), !is.na(numbers_match)) %>%
     pull(task_id) %>% unique()
   idx <- which(!tasks_df$task_id %in% done_ids)
   if (length(idx) == 0L) nrow(tasks_df) else idx[[1L]]
@@ -267,7 +268,8 @@ init_phase <- local({
   ph <- "done"
   for (p in PHASE_ORDER[PHASE_ORDER != "done"]) {
     done_ids <- init_anns[[p]] %>%
-      filter(!is.na(task_id) & nzchar(task_id)) %>%
+      filter(!is.na(task_id) & nzchar(task_id),
+             !is.na(screenshot_correct), !is.na(numbers_match)) %>%
       pull(task_id) %>% unique()
     if (any(!all_tasks[[p]]$task_id %in% done_ids)) { ph <- p; break }
   }
@@ -487,8 +489,10 @@ server <- function(input, output, session) {
       cur <- standardize_annotations(anns[[ph]])
       hit <- cur %>% filter(task_id == as.character(r$task_id[[1]]))
       if (nrow(hit) >= 1) {
-        updateRadioButtons(session, "screenshot_correct", selected = hit$screenshot_correct[[1]])
-        updateRadioButtons(session, "numbers_match",      selected = hit$numbers_match[[1]])
+        updateRadioButtons(session, "screenshot_correct",
+          selected = if (!is.na(hit$screenshot_correct[[1]])) hit$screenshot_correct[[1]] else character(0))
+        updateRadioButtons(session, "numbers_match",
+          selected = if (!is.na(hit$numbers_match[[1]])) hit$numbers_match[[1]] else character(0))
         updateTextAreaInput(session, "notes", value = ifelse(is.na(hit$notes[[1]]), "", hit$notes[[1]]))
         if (!is.na(hit$reviewer[[1]]) && nzchar(hit$reviewer[[1]]))
           updateTextInput(session, "reviewer", value = hit$reviewer[[1]])
@@ -561,6 +565,10 @@ server <- function(input, output, session) {
     r <- current(); if (is.null(r)) return()
     sc <- if (length(input$screenshot_correct) > 0) as.character(input$screenshot_correct) else NA_character_
     nm <- if (length(input$numbers_match) > 0)      as.character(input$numbers_match)      else NA_character_
+    # Shiny serialises NA_character_ as the string "NA" when passed to updateRadioButtons;
+    # normalise it back so the is.na guard works correctly.
+    if (identical(sc, "NA")) sc <- NA_character_
+    if (identical(nm, "NA")) nm <- NA_character_
     if (is.na(sc) && is.na(nm)) return()
     rec <- tibble(
       task_id            = as.character(r$task_id[[1]]),
