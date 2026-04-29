@@ -227,7 +227,8 @@ if (!is.na(FILTER_DEVICE)) {
   endline_app_raw <- endline_app_raw %>% filter(tolower(device) == tolower(FILTER_DEVICE))
 }
 
-# Filter baseline to endline completers
+# Filter baseline to endline completers, then filter endline to baseline-matched
+# respondents only — ensures both waves contain the same set of participants.
 endline_ids <- endline_avg_raw %>%
   filter(!is.na(participant_id) & nzchar(as.character(participant_id))) %>%
   pull(participant_id) %>% as.character() %>% unique()
@@ -240,6 +241,12 @@ baseline_app_raw <- safe_read(BASELINE_APP_IN) %>%
 if (nrow(baseline_avg_raw) == 0)
   stop("No baseline respondents matched any endline participant_id.\n",
        "The data package may be incomplete or mismatched. Contact Chris (cb5691@nyu.edu).", call. = FALSE)
+
+baseline_ids <- as.character(baseline_avg_raw$participant_id)
+endline_avg_raw <- endline_avg_raw %>%
+  filter(as.character(participant_id) %in% baseline_ids)
+endline_app_raw <- endline_app_raw %>%
+  filter(as.character(participant_id) %in% baseline_ids)
 
 message(sprintf("Endline: %d avg, %d app respondents", nrow(endline_avg_raw), nrow(endline_app_raw)))
 message(sprintf("Baseline (filtered to endline completers): %d avg, %d app respondents",
@@ -552,12 +559,15 @@ server <- function(input, output, session) {
     ph <- state$phase
     if (ph == "done") return()
     r <- current(); if (is.null(r)) return()
+    sc <- if (length(input$screenshot_correct) > 0) as.character(input$screenshot_correct) else NA_character_
+    nm <- if (length(input$numbers_match) > 0)      as.character(input$numbers_match)      else NA_character_
+    if (is.na(sc) && is.na(nm)) return()
     rec <- tibble(
       task_id            = as.character(r$task_id[[1]]),
       respondent_id      = as.character(r$respondent_id[[1]]),
       reviewer           = as.character(input$reviewer),
-      screenshot_correct = if (length(input$screenshot_correct) > 0) as.character(input$screenshot_correct) else NA_character_,
-      numbers_match      = if (length(input$numbers_match) > 0) as.character(input$numbers_match) else NA_character_,
+      screenshot_correct = sc,
+      numbers_match      = nm,
       notes              = as.character(input$notes),
       annotated_at       = as.character(Sys.time())
     ) %>% standardize_annotations()
@@ -838,7 +848,6 @@ server <- function(input, output, session) {
       p <- ph_target
       observeEvent(input[[paste0("phase_tab_", p)]], {
         if (identical(state$phase, p)) return()
-        do_save()
         state$phase <- p
       }, ignoreInit = TRUE, ignoreNULL = TRUE)
     })
