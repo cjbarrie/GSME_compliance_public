@@ -9,7 +9,7 @@ library(tibble)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-TEAM_SLUG <- ""  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
+TEAM_SLUG <- "FR"  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
 
 # Device filter — NA for all devices (set to "Android" or "iOS" to restrict to one device type if needed)
 FILTER_DEVICE <- NA
@@ -262,6 +262,50 @@ all_tasks <- list(
 
 # Pre-load annotations to compute initial indices (resume from where left off)
 init_anns <- lapply(ANN_PATHS, load_annotations)
+
+# Audit-log recovery: if the annotations file is missing entries that exist in
+# the audit log (e.g. due to a Dropbox conflict or a re-extracted data package),
+# rebuild the annotations file from the audit log before the app launches.
+is_valid_ann <- function(sc, nm) !is.na(sc) & sc != "NA" & nzchar(sc) &
+                                  !is.na(nm) & nm != "NA" & nzchar(nm)
+
+for (ph in names(ANN_PATHS)) {
+  audit_path <- AUDIT_PATHS[[ph]]
+  ann_path   <- ANN_PATHS[[ph]]
+  if (!file.exists(audit_path)) next
+
+  audit <- tryCatch(safe_read(audit_path), error = function(e) NULL)
+  if (is.null(audit) || nrow(audit) == 0) next
+  audit <- standardize_annotations(audit)
+
+  ann_ids <- init_anns[[ph]] %>%
+    filter(is_valid_ann(screenshot_correct, numbers_match)) %>%
+    pull(task_id) %>% unique()
+
+  missing <- audit %>%
+    filter(is_valid_ann(screenshot_correct, numbers_match),
+           !task_id %in% ann_ids)
+
+  if (nrow(missing) == 0) next
+
+  # Keep most recent valid entry per missing task
+  recovered <- missing %>%
+    arrange(annotated_at) %>%
+    group_by(task_id) %>%
+    slice_tail(n = 1) %>%
+    ungroup()
+
+  message(sprintf(
+    "WARNING: recovered %d annotation(s) from audit log for %s — %s was out of sync.",
+    nrow(recovered), ph, basename(ann_path)
+  ))
+
+  merged <- bind_rows(init_anns[[ph]], recovered) %>%
+    arrange(task_id) %>%
+    standardize_annotations()
+  init_anns[[ph]] <- merged
+  save_annotations(ann_path, merged)
+}
 
 # Determine initial phase: first phase that still has unannotated tasks
 init_phase <- local({
