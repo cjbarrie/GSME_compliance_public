@@ -9,10 +9,10 @@ library(tibble)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-TEAM_SLUG <- "AU"  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
+TEAM_SLUG <- ""  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
 
 # Device filter — NA for all devices (set to "Android" or "iOS" to restrict to one device type if needed)
-FILTER_DEVICE <- "Android"
+FILTER_DEVICE <- NA
 
 
 # ----------------------------
