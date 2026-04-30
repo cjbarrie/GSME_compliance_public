@@ -9,10 +9,10 @@ library(tibble)
 # ----------------------------
 # CONFIG (EDIT THESE)
 # ----------------------------
-TEAM_SLUG <- "FR"  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
+TEAM_SLUG <- "AU"  # <-- your ISO2 country code (e.g. "GB", "US", "IN", "NL", "DK")
 
 # Device filter — NA for all devices (set to "Android" or "iOS" to restrict to one device type if needed)
-FILTER_DEVICE <- NA
+FILTER_DEVICE <- "Android"
 
 
 # ----------------------------
@@ -239,6 +239,11 @@ baseline_avg_raw <- safe_read(BASELINE_AVG_IN) %>%
 baseline_app_raw <- safe_read(BASELINE_APP_IN) %>%
   filter(as.character(participant_id) %in% endline_ids)
 
+if (!is.na(FILTER_DEVICE)) {
+  baseline_avg_raw <- baseline_avg_raw %>% filter(tolower(device) == tolower(FILTER_DEVICE))
+  baseline_app_raw <- baseline_app_raw %>% filter(tolower(device) == tolower(FILTER_DEVICE))
+}
+
 if (nrow(baseline_avg_raw) == 0)
   stop("No baseline respondents matched any endline participant_id.\n",
        "The data package may be incomplete or mismatched. Contact Chris (cb5691@nyu.edu).", call. = FALSE)
@@ -259,6 +264,17 @@ all_tasks <- list(
   baseline_avg = build_or_load_sample("avg", baseline_avg_raw, SAMPLE_PATHS$baseline_avg),
   baseline_app = build_or_load_sample("app", baseline_app_raw, SAMPLE_PATHS$baseline_app)
 )
+
+# Re-apply device filter to task lists after loading from cache.
+# build_or_load_sample returns a cached file as-is if it exists, so sample
+# files built without a filter would otherwise bypass FILTER_DEVICE.
+if (!is.na(FILTER_DEVICE)) {
+  all_tasks <- lapply(all_tasks, function(df) {
+    if ("device" %in% names(df))
+      df %>% filter(tolower(device) == tolower(FILTER_DEVICE))
+    else df
+  })
+}
 
 # Pre-load annotations to compute initial indices (resume from where left off)
 init_anns <- lapply(ANN_PATHS, load_annotations)
